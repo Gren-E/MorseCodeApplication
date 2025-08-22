@@ -14,6 +14,9 @@ public class OvalFramedButton extends OvalFramedPanel {
     private JLabel buttonTextLabel;
     private ActionListener mouseClickAction;
 
+    private Color backgroundColor;
+    private Color highlightColor;
+
     public OvalFramedButton(String buttonText) {
 
         buttonTextLabel = new JLabel(buttonText);
@@ -22,15 +25,23 @@ public class OvalFramedButton extends OvalFramedPanel {
 
         add(buttonTextLabel, new GBC(0,0).setInsets(5,15,5,15));
 
+        backgroundColor = getBackground();
+
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
                 super.mouseEntered(e);
+                if(isEnabled() && highlightColor != null) {
+                    setBackground(highlightColor);
+                }
             }
 
             @Override
             public void mouseExited(MouseEvent e) {
                 super.mouseExited(e);
+                if (backgroundColor != null) {
+                    setBackground(backgroundColor);
+                }
             }
 
             @Override
@@ -57,6 +68,15 @@ public class OvalFramedButton extends OvalFramedPanel {
 
     public void setActionListener(ActionListener action) {
         mouseClickAction = action;
+    }
+
+    public void setHighlightColor(Color highlightColor) {
+        this.highlightColor = highlightColor;
+    }
+
+    public void setBackgroundColor(Color backgroundColor) {
+        super.setBackground(backgroundColor);
+        this.backgroundColor = backgroundColor;
     }
 
     @Override

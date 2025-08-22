@@ -38,7 +38,7 @@ public class Localizer {
     }
 
     public static boolean isSetToPolish() {
-        return LOCALE_POLISH.equals(Locale.getDefault());
+        return LOCALE_POLISH.getLanguage().equals(Locale.getDefault().getLanguage());
     }
 
     public static boolean isSetToEnglish() {
