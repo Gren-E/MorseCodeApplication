@@ -11,7 +11,6 @@ import javax.swing.JFrame;
 import java.awt.BorderLayout;
 import java.awt.Rectangle;
 
-
 public class AppWindow extends JFrame {
 
     private final MorseTranslationPanel morseTranslationPanel;
@@ -22,7 +21,7 @@ public class AppWindow extends JFrame {
     private boolean isFullscreen;
 
     public AppWindow() {
-        setTitle("MorseCodeTranslator");
+        setTitle("MorseCodeApplication");
 
         setUndecorated(true);
         setBackground(AppColorPalette.TRANSPARENCY);
@@ -35,12 +34,12 @@ public class AppWindow extends JFrame {
 
         setLayout(new BorderLayout());
 
-        toggleFullscreen();
+        enableFullscreen(true);
     }
 
-    public void toggleFullscreen() {
+    public void enableFullscreen(boolean isEnabled) {
         dispose();
-        this.isFullscreen = !this.isFullscreen;
+        this.isFullscreen = isEnabled;
 
         if (!this.isFullscreen) {
             setAlwaysOnTop(true);

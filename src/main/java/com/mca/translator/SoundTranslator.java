@@ -10,7 +10,6 @@ public class SoundTranslator {
             if(!result) {
                 return false;
             }
-
             result = await(0.2);
             if(!result) {
                 return false;
@@ -26,22 +25,16 @@ public class SoundTranslator {
             AudioPlayer.playSound(signalIsLong ? 0.5 : 0.2);
         }
 
-        boolean result = await(0.5);
-        if(!result) {
-            return false;
-        }
-
-        return true;
+        return await(0.5);
     }
 
     private static boolean await(double durationInSeconds) {
         try {
             Thread.sleep((int) (durationInSeconds * 1000));
+            return true;
         } catch (InterruptedException e) {
             return false;
         }
-
-        return true;
     }
 
 }

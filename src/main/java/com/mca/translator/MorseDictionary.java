@@ -57,10 +57,11 @@ public class MorseDictionary {
         return '!';
     }
 
-    public static boolean isSymbolSupported(char c) {
-        if (c >= 'a' && c <= 'z') {
-            c -= 'a' - 'A';
+    public static boolean isSymbolSupported(char symbol) {
+        if (symbol >= 'a' && symbol <= 'z') {
+            symbol -= 'a' - 'A';
         }
-        return morseAlphabet.containsKey(c);
+        return morseAlphabet.containsKey(symbol);
     }
+
 }

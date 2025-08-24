@@ -12,81 +12,78 @@ import java.awt.Rectangle;
 public class SimpleScrollBarUI extends BasicScrollBarUI  {
 
     @Override
-    public void paintTrack(Graphics g, JComponent c, Rectangle trackBounds) {
-        g.setColor(c.getBackground());
+    public void paintTrack(Graphics g, JComponent component, Rectangle trackBounds) {
+        g.setColor(component.getBackground());
         g.fillRect(trackBounds.x, trackBounds.y, trackBounds.width, trackBounds.height);
     }
 
     @Override
-    public void paintThumb(Graphics g, JComponent c, Rectangle thumbBounds) {
-        g.setColor(c.getForeground());
+    public void paintThumb(Graphics g, JComponent component, Rectangle thumbBounds) {
+        g.setColor(component.getForeground());
         g.fillRect(thumbBounds.x + 3, thumbBounds.y + 3, thumbBounds.width - 12, thumbBounds.height - 12);
     }
 
     @Override
-    protected void layoutVScrollbar(JScrollBar sb) {
-        Dimension sbSize = sb.getSize();
-        Insets sbInsets = sb.getInsets();
+    protected void layoutVScrollbar(JScrollBar scrollBar) {
+        Dimension sbSize = scrollBar.getSize();
+        Insets sbInsets = scrollBar.getInsets();
 
-        int itemW = sbSize.width - (sbInsets.left + sbInsets.right);
+        int itemWidth = sbSize.width - (sbInsets.left + sbInsets.right);
         int itemX = sbInsets.left;
 
-        int decrButtonH = 0;
+        int decrButtonHeight = 0;
         int decrButtonY = sbInsets.top;
 
-        int incrButtonH = 0;
-        int incrButtonY = sbSize.height - (sbInsets.bottom + incrButtonH);
+        int incrButtonHeight = 0;
+        int incrButtonY = sbSize.height - (sbInsets.bottom + incrButtonHeight);
 
-        int sbInsetsH = sbInsets.top + sbInsets.bottom;
-        int sbButtonsH = 0;
+        int sbInsetsHeight = sbInsets.top + sbInsets.bottom;
+        int sbButtonsHeight = 0;
         int gaps = decrGap + incrGap;
-        float trackH = sbSize.height - (sbInsetsH + sbButtonsH) - gaps;
+        float trackHeight = sbSize.height - (sbInsetsHeight + sbButtonsHeight) - gaps;
 
-        float min = sb.getMinimum();
-        float extent = sb.getVisibleAmount();
-        float range = sb.getMaximum() - min;
-        float value = sb.getValue();
+        float min = scrollBar.getMinimum();
+        float extent = scrollBar.getVisibleAmount();
+        float range = scrollBar.getMaximum() - min;
+        float value = scrollBar.getValue();
 
-        int thumbH = (range <= 0)
-                ? getMaximumThumbSize().height : (int)(trackH * (extent / range));
-        thumbH = Math.max(thumbH, getMinimumThumbSize().height);
-        thumbH = Math.min(thumbH, getMaximumThumbSize().height);
+        int thumbHeight = range <= 0 ? getMaximumThumbSize().height : (int)(trackHeight * (extent / range));
+        thumbHeight = Math.max(thumbHeight, getMinimumThumbSize().height);
+        thumbHeight = Math.min(thumbHeight, getMaximumThumbSize().height);
 
-        int thumbY = incrButtonY - incrGap - thumbH;
-        if (value < (sb.getMaximum() - sb.getVisibleAmount())) {
-            float thumbRange = trackH - thumbH;
+        int thumbY = incrButtonY - incrGap - thumbHeight;
+        if (value < (scrollBar.getMaximum() - scrollBar.getVisibleAmount())) {
+            float thumbRange = trackHeight - thumbHeight;
             thumbY = (int)(0.5f + (thumbRange * ((value - min) / (range - extent))));
-            thumbY +=  decrButtonY + decrButtonH + decrGap;
+            thumbY +=  decrButtonY + decrButtonHeight + decrGap;
         }
 
-        int sbAvailButtonH = (sbSize.height - sbInsetsH);
-        if (sbAvailButtonH < sbButtonsH) {
-            incrButtonH = decrButtonH = sbAvailButtonH / 2;
-            incrButtonY = sbSize.height - (sbInsets.bottom + incrButtonH);
+        int sbAvailButtonHeight = (sbSize.height - sbInsetsHeight);
+        if (sbAvailButtonHeight < sbButtonsHeight) {
+            incrButtonHeight = decrButtonHeight = sbAvailButtonHeight / 2;
+            incrButtonY = sbSize.height - (sbInsets.bottom + incrButtonHeight);
         }
-        decrButton.setBounds(itemX, decrButtonY, itemW, decrButtonH);
-        incrButton.setBounds(itemX, incrButtonY, itemW, incrButtonH);
+        decrButton.setBounds(itemX, decrButtonY, itemWidth, decrButtonHeight);
+        incrButton.setBounds(itemX, incrButtonY, itemWidth, incrButtonHeight);
 
-        /* Update the trackRect field.
-         */
-        int itrackY = decrButtonY + decrButtonH + decrGap;
-        int itrackH = incrButtonY - incrGap - itrackY;
-        trackRect.setBounds(itemX, itrackY, itemW, itrackH);
+        int itrackY = decrButtonY + decrButtonHeight + decrGap;
+        int itrackHeight = incrButtonY - incrGap - itrackY;
+        trackRect.setBounds(itemX, itrackY, itemWidth, itrackHeight);
 
-        if(thumbH >= (int)trackH)       {
+        if(thumbHeight >= (int)trackHeight) {
             if (UIManager.getBoolean("ScrollBar.alwaysShowThumb")) {
-                setThumbBounds(itemX, itrackY, itemW, itrackH);
+                setThumbBounds(itemX, itrackY, itemWidth, itrackHeight);
             } else {
                 setThumbBounds(0, 0, 0, 0);
             }
         } else {
-            if ((thumbY + thumbH) > incrButtonY - incrGap) {
-                thumbY = incrButtonY - incrGap - thumbH;
+            if ((thumbY + thumbHeight) > incrButtonY - incrGap) {
+                thumbY = incrButtonY - incrGap - thumbHeight;
             }
-            if (thumbY  < (decrButtonY + decrButtonH + decrGap)) {
-                thumbY = decrButtonY + decrButtonH + decrGap + 1;
+            if (thumbY  < (decrButtonY + decrButtonHeight + decrGap)) {
+                thumbY = decrButtonY + decrButtonHeight + decrGap + 1;
             }
-            setThumbBounds(itemX, thumbY, itemW, thumbH);
+            setThumbBounds(itemX, thumbY, itemWidth, thumbHeight);
         }
     }
 

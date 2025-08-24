@@ -23,4 +23,5 @@ public class TextTranslator {
         }
         return translatedText.toString();
     }
+
 }

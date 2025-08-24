@@ -14,10 +14,10 @@ public abstract class MainPanel extends JPanel {
     protected final AppWindow window;
 
     protected final SettingsPanel settingsPanel;
+
     protected final JLabel authorsLabel;
 
     protected MainPanel(AppWindow parent) {
-
         window = parent;
 
         settingsPanel = new SettingsPanel(parent);
@@ -26,7 +26,6 @@ public abstract class MainPanel extends JPanel {
         authorsLabel = new LocalizedJLabel(LocalizerAttribute.AUTHORS);
         authorsLabel.setHorizontalAlignment(SwingConstants.CENTER);
         authorsLabel.setForeground(AppColorPalette.ELEMENT_FOREGROUND);
-
     }
 
     public void refreshPanel() {

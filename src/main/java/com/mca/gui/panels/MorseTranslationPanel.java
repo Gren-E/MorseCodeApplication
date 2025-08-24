@@ -7,7 +7,8 @@ import com.mca.translator.MorseSymbol;
 import com.mca.translator.SoundTranslator;
 import com.mca.translator.TextTranslator;
 import com.util.gui.GBC;
-import com.util.gui.component.OvalFramedButton;
+import com.util.gui.component.OvalButton;
+import com.util.gui.component.RectangularPanel;
 import org.apache.commons.lang3.ArrayUtils;
 
 import javax.swing.JComponent;
@@ -19,69 +20,56 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import java.awt.Color;
-import java.awt.Graphics;
 import java.awt.GridBagLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MorseTranslationPanel extends JPanel {
+import static com.mca.gui.MorseGUIDefaults.DASH;
+import static com.mca.gui.MorseGUIDefaults.DELETE;
+import static com.mca.gui.MorseGUIDefaults.DOT;
+import static com.mca.gui.MorseGUIDefaults.SLASH;
+import static com.mca.gui.MorseGUIDefaults.SPACE;
+import static com.mca.gui.MorseGUIDefaults.UNDERLINE;
 
-    public static final String DOT = "·";
-    public static final String DASH = "-";
-    public static final String SPACE = "⎵";
-    public static final String DELETE = "↩";
+public class MorseTranslationPanel extends RectangularPanel {
 
     private final JTextArea sourceTextArea;
     private final JTextArea morseCodeTranslationArea;
 
-    private final OvalFramedButton playSoundButton;
-
-    private final OvalFramedButton symbolButton;
-    private final OvalFramedButton spaceButton;
-
-    private final OvalFramedButton deleteButton;
+    private final OvalButton playSoundButton;
+    private final OvalButton symbolButton;
+    private final OvalButton spaceButton;
+    private final OvalButton deleteButton;
 
     private boolean isSourceTextEnabled;
 
     public MorseTranslationPanel() {
         setOpaque(false);
+        setArch(20);
 
         sourceTextArea = JComponentFactory.createJTextArea(this::updateTranscription, 18);
-        sourceTextArea.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                switchToSourceTextArea(true);
-            }
-        });
-        JScrollPane sourceTextScrollPane = JComponentFactory.createTransparentScrollPane(sourceTextArea, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER,
-                200);
+        sourceTextArea.addMouseListener(new SwitchTextAreaMouseAdapter(true));
 
         morseCodeTranslationArea = JComponentFactory.createJTextArea(this::updateText, 22);
         morseCodeTranslationArea.setEditable(false);
         morseCodeTranslationArea.setCaretColor(AppColorPalette.TRANSPARENCY);
-        morseCodeTranslationArea.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                switchToSourceTextArea(false);
-            }
-        });
-        JScrollPane morseCodeTranslationScrollPane = JComponentFactory.createTransparentScrollPane(morseCodeTranslationArea, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER,
-                200);
+        morseCodeTranslationArea.addMouseListener(new SwitchTextAreaMouseAdapter(false));
 
-        playSoundButton = JComponentFactory.createMenuOvalButton("⏵" + "|" + "⏸");
-        symbolButton = JComponentFactory.createTranslationOvalButton(String.format("%s / %s", DOT, DASH));
-        spaceButton = JComponentFactory.createTranslationOvalButton(SPACE);
-        deleteButton = JComponentFactory.createTranslationOvalButton(DELETE);
-
+        playSoundButton = JComponentFactory.createMenuOvalButton("⏵|⏸");
         playSoundButton.setActionListener(action -> {
             String morseText = sourceTextArea.getText();
             SoundTranslator.playSound(TextTranslator.translateToMorse(morseText));
         });
 
+        symbolButton = JComponentFactory.createTranslationOvalButton(String.format("%s / %s", DOT, DASH));
         symbolButton.addMouseListener(new MorseInputMouseAdapter(DOT, DASH));
-        spaceButton.addMouseListener(new MorseInputMouseAdapter(" ", "/"));
+
+        spaceButton = JComponentFactory.createTranslationOvalButton(UNDERLINE);
+        spaceButton.addMouseListener(new MorseInputMouseAdapter(SPACE, SLASH));
+
+        deleteButton = JComponentFactory.createTranslationOvalButton(DELETE);
         deleteButton.setActionListener(action -> {
             String morseText = morseCodeTranslationArea.getText();
             if (!morseText.isEmpty()) {
@@ -90,7 +78,10 @@ public class MorseTranslationPanel extends JPanel {
         });
 
         switchToSourceTextArea(true);
+        initLayout();
+    }
 
+    private void initLayout() {
         JPanel buttonPanel = new JPanel(new GridBagLayout());
         buttonPanel.setOpaque(false);
         buttonPanel.add(playSoundButton, new GBC(0,0));
@@ -98,14 +89,18 @@ public class MorseTranslationPanel extends JPanel {
         buttonPanel.add(spaceButton, new GBC(2, 0).setAnchor(GBC.WEST).setWeight(1, 0).setInsets(0, 2, 0, 0));
         buttonPanel.add(deleteButton, new GBC(3, 0).setAnchor(GBC.EAST).setWeight(0, 0));
 
+        JScrollPane sourceTextScrollPane = JComponentFactory.createTransparentScrollPane(sourceTextArea,
+                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER, 200);
+        JScrollPane morseCodeTranslationScrollPane = JComponentFactory.createTransparentScrollPane(morseCodeTranslationArea,
+                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER, 200);
+
         setLayout(new GridBagLayout());
-        add(sourceTextScrollPane, new GBC(0, 0).setWeight(1, 0.3).setFill(GBC.BOTH).setInsets(5, 10, 2, 10));
-        add(morseCodeTranslationScrollPane, new GBC(0, 1).setWeight(1, 0.7).setFill(GBC.BOTH).setInsets(2, 10, 5, 10));
-        add(buttonPanel, new GBC(0, 2).setFill(GBC.HORIZONTAL).setInsets(2, 10, 5, 10));
+        add(sourceTextScrollPane, new GBC(0, 0).setInsets(5, 10, 2, 10).setWeight(1, 0.3).setFill(GBC.BOTH));
+        add(morseCodeTranslationScrollPane, new GBC(0, 1).setInsets(2, 10, 5, 10).setWeight(1, 0.7).setFill(GBC.BOTH));
+        add(buttonPanel, new GBC(0, 2).setInsets(2, 10, 5, 10).setFill(GBC.HORIZONTAL));
     }
 
     public void updateTranscription(DocumentEvent event) {
-
         Document document = event.getDocument();
         SwingUtilities.invokeLater(() -> {
             try {
@@ -147,12 +142,12 @@ public class MorseTranslationPanel extends JPanel {
         for (MorseSymbol symbol : morseSymbols) {
             boolean[] symbolTranscription = symbol.getTranscription();
             if (symbolTranscription.length == 0) {
-                builder.append("/");
+                builder.append(SLASH);
             }
             for (boolean flag : symbolTranscription) {
                 builder.append(flag ? DASH : DOT);
             }
-            builder.append(" ");
+            builder.append(SPACE);
         }
         return builder.toString();
     }
@@ -165,11 +160,11 @@ public class MorseTranslationPanel extends JPanel {
                 morseSymbolElements.add(true);
             } else if (String.valueOf(character).equals(DOT)) {
                 morseSymbolElements.add(false);
-            } else if (String.valueOf(character).equals(" ")) {
+            } else if (String.valueOf(character).equals(SPACE)) {
                 MorseSymbol symbol = MorseSymbol.of(ArrayUtils.toPrimitive(morseSymbolElements.toArray(new Boolean[0])));
                 morseSymbols.add(symbol);
                 morseSymbolElements.clear();
-            } else if (String.valueOf(character).equals("/")) {
+            } else if (String.valueOf(character).equals(SLASH)) {
                 if (!morseSymbolElements.isEmpty()) {
                     MorseSymbol symbol = MorseSymbol.of(ArrayUtils.toPrimitive(morseSymbolElements.toArray(new Boolean[0])));
                     morseSymbols.add(symbol);
@@ -210,17 +205,6 @@ public class MorseTranslationPanel extends JPanel {
         morseCodeTranslationArea.setBackground(!isSourceTextEnabled ? enabledColor : disabledColor);
     }
 
-    @Override
-    public void paintComponent(Graphics g) {
-        int width = getWidth();
-        int height = getHeight();
-
-        Color color = getBackground();
-
-        g.setColor(color);
-        g.fillRoundRect(0, 0, width, height, 20, 20);
-    }
-
     class MorseInputMouseAdapter extends MouseAdapter {
 
         private long pressedTime;
@@ -246,6 +230,20 @@ public class MorseTranslationPanel extends JPanel {
                 long delay = System.currentTimeMillis() - pressedTime;
                 morseCodeTranslationArea.append(delay >= 500 ? longInputSymbol : shortInputSymbol);
             }
+        }
+    }
+
+    class SwitchTextAreaMouseAdapter extends MouseAdapter {
+
+        private final boolean isSourceTextEnabled;
+
+        public SwitchTextAreaMouseAdapter(boolean isSourceTextEnabled) {
+            this.isSourceTextEnabled = isSourceTextEnabled;
+        }
+
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            switchToSourceTextArea(isSourceTextEnabled);
         }
     }
 

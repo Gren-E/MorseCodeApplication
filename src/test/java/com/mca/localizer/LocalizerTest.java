@@ -14,12 +14,18 @@ public class LocalizerTest {
     @Test
     public void localeTest() {
         Localizer.setLocale(LOCALE_EN);
+        Assertions.assertTrue(Localizer.isSetToEnglish());
+        Assertions.assertFalse(Localizer.isSetToPolish());
         Assertions.assertEquals("Exit", Localizer.get(LocalizerAttribute.EXIT));
 
         Localizer.setLocale(LOCALE_PL);
+        Assertions.assertTrue(Localizer.isSetToPolish());
+        Assertions.assertFalse(Localizer.isSetToEnglish());
         Assertions.assertEquals("Wyjście", Localizer.get(LocalizerAttribute.EXIT));
 
         Localizer.setLocale(LOCALE_UNSUPPORTED);
+        Assertions.assertFalse(Localizer.isSetToEnglish());
+        Assertions.assertFalse(Localizer.isSetToPolish());
         Assertions.assertEquals("Exit", Localizer.get(LocalizerAttribute.EXIT));
     }
 

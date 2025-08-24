@@ -3,12 +3,12 @@ package com.mca.gui.panels;
 import com.mca.gui.AppColorPalette;
 import com.mca.gui.window.AppWindow;
 import com.util.gui.GBC;
-import com.util.gui.component.RectangularFramedPanel;
+import com.util.gui.component.RectangularPanel;
 
 import java.awt.BorderLayout;
 import java.awt.GridBagLayout;
 
-public class MaximizedMainPanel extends MainPanel{
+public class MaximizedMainPanel extends MainPanel {
 
     public MaximizedMainPanel(AppWindow parent) {
         super(parent);
@@ -17,7 +17,8 @@ public class MaximizedMainPanel extends MainPanel{
 
     @Override
     public void updateLayout() {
-        RectangularFramedPanel maximizedPanel = new RectangularFramedPanel();
+        RectangularPanel maximizedPanel = new RectangularPanel();
+        maximizedPanel.enableBorder(true);
 
         setLayout(new BorderLayout());
         add(maximizedPanel, BorderLayout.CENTER);
